@@ -13,6 +13,12 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
+# Production files
+.env.production
+.env.staging
+config.json
+secrets/
+
 # Virtual environment
 venv/
 .venv/
