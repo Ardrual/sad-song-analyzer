@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Sad Song Analyzer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+        
+        body {
+            font-family: 'Courier Prime', monospace;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #2d2d2d;
+            padding: 40px;
+            border: 1px solid #404040;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #f0f0f0;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #d0d0d0;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #555;
+            background-color: #333;
+            color: #e0e0e0;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #777;
+            box-shadow: 0 0 10px rgba(119, 119, 119, 0.3);
+        }
+        button {
+            background-color: #4a4a4a;
+            color: #e0e0e0;
+            padding: 15px 30px;
+            border: 2px solid #666;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Courier Prime', monospace;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #555;
+            border-color: #777;
+            box-shadow: 0 0 15px rgba(85, 85, 85, 0.5);
+        }
+        .link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+            text-decoration: none;
+            border-bottom: 1px dotted #555;
+        }
+        .link:hover {
+            color: #ccc;
+            border-bottom-color: #777;
+        }
+        .messages {
+            margin-bottom: 20px;
+        }
+        .messages div {
+            padding: 10px;
+            border: 1px solid #666;
+            background-color: #333;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+        }
+        .helptext {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+        }
+        .errorlist {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .errorlist li {
+            list-style: none;
+            padding: 2px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Register</h1>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div>{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username:</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if form.username.help_text %}
+                    <div class="helptext">{{ form.username.help_text }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">Password:</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.password1.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if form.password1.help_text %}
+                    <div class="helptext">{{ form.password1.help_text }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password:</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.password2.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if form.password2.help_text %}
+                    <div class="helptext">{{ form.password2.help_text }}</div>
+                {% endif %}
+            </div>
+            
+            <button type="submit">Create Account</button>
+        </form>
+        
+        <a href="{% url 'login' %}" class="link">Already have an account? Login</a>
+        <a href="{% url 'index' %}" class="link">Back to Home</a>
+    </div>
+</body>
+</html>
