@@ -43,10 +43,32 @@ Note: The `.env.local` file is gitignored to keep your API key secure.
 - Fallback to dummy data if API fails
 - Logging for debugging API issues
 
+## Deployment
+
+### Fly.io Deployment
+Ready for deployment to Fly.io with:
+- `Dockerfile` - Multi-stage build with security best practices
+- `fly.toml` - Configuration with auto-scaling and HTTPS
+- WhiteNoise for static files
+- Gunicorn WSGI server
+- PostgreSQL ready (SQLite works too)
+
+Deploy steps:
+1. Install flyctl: `curl -L https://fly.io/install.sh | sh`
+2. Login: `fly auth login`
+3. Launch: `fly launch` (will use existing fly.toml)
+4. Set secrets: `fly secrets set GEMINI_API_KEY=your_key SECRET_KEY=your_secret`
+5. Deploy: `fly deploy`
+
+### Environment Variables for Production
+- `GEMINI_API_KEY` - Your Google AI Studio API key
+- `SECRET_KEY` - Django secret key (generate new one)
+- `DEBUG` - Set to "False" for production
+- `ALLOWED_HOSTS` - Your domain (auto-configured in fly.toml)
+
 ## Next Steps for Enhancement
 1. Add API rate limiting and caching
 2. Implement user feedback system for analysis quality
 3. Add batch analysis for multiple songs
 4. Create admin interface for managing analyses
 5. Add export functionality for user data
-6. Create requirements.txt file
