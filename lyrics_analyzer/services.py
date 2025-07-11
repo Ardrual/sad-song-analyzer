@@ -23,6 +23,12 @@ def analyze_lyrics_with_gemini(lyrics):
         # Create the model
         model = genai.GenerativeModel('gemini-1.5-flash')
         
+    except Exception as e:
+        logger.error(f"Failed to configure Gemini or create model: {e}")
+        return None
+    
+    try:
+        
         # Craft the prompt for structured analysis
         prompt = f"""
         Analyze the following song lyrics for sadness and emotional content. 
@@ -48,6 +54,11 @@ def analyze_lyrics_with_gemini(lyrics):
         # Generate response
         response = model.generate_content(prompt)
         
+        # Validate response exists and has content
+        if not response or not hasattr(response, 'text') or not response.text:
+            logger.error("Empty or invalid response from Gemini API")
+            return None
+        
         # Parse the JSON response
         try:
             response_text = response.text.strip()
@@ -65,23 +76,31 @@ def analyze_lyrics_with_gemini(lyrics):
             
             # Validate the response structure
             if not all(key in result for key in ['sad_score', 'tags', 'description']):
-                raise ValueError("Missing required keys in response")
+                logger.error(f"Missing required keys in response. Got keys: {list(result.keys())}")
+                return None
             
             # Ensure sad_score is within valid range and format to one decimal place
-            sad_score = float(result['sad_score'])
-            if not 1.0 <= sad_score <= 10.0:
-                raise ValueError(f"Invalid sad_score: {sad_score}")
-            
-            # Format to one decimal place
-            sad_score = round(sad_score, 1)
+            try:
+                sad_score = float(result['sad_score'])
+                if not 1.0 <= sad_score <= 10.0:
+                    logger.error(f"Invalid sad_score: {sad_score}")
+                    return None
+                
+                # Format to one decimal place
+                sad_score = round(sad_score, 1)
+            except (ValueError, TypeError) as e:
+                logger.error(f"Error processing sad_score: {e}")
+                return None
             
             # Ensure tags is a list
             if not isinstance(result['tags'], list):
-                raise ValueError("Tags must be a list")
+                logger.error(f"Tags must be a list, got: {type(result['tags'])}")
+                return None
             
             # Ensure description is a string
             if not isinstance(result['description'], str):
-                raise ValueError("Description must be a string")
+                logger.error(f"Description must be a string, got: {type(result['description'])}")
+                return None
             
             return {
                 'sad_score': sad_score,
@@ -92,7 +111,7 @@ def analyze_lyrics_with_gemini(lyrics):
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse JSON response: {e}")
             logger.error(f"Raw response: {response.text}")
-            raise ValueError("Invalid JSON response from Gemini")
+            return None
         
     except Exception as e:
         logger.error(f"Gemini API error: {e}")

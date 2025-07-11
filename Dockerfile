@@ -15,6 +15,7 @@ RUN apt-get update \
         build-essential \
         libpq-dev \
     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc libpq-dev sqlite3
 
 # Install Python dependencies
 COPY requirements.txt .
@@ -26,13 +27,19 @@ COPY . .
 # Create a non-root user
 RUN adduser --disabled-password --gecos '' appuser \
     && chown -R appuser:appuser /app
+
+# Copy and set up entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 USER appuser
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
-
 # Expose port
 EXPOSE 8080
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "sad_song_analyzer.wsgi:application"]
+# Use entrypoint script
+USER root
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "sad_song_analyzer.wsgi:application"]
